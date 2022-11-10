@@ -1,44 +1,19 @@
-from bs4 import BeautifulSoup
 import requests
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
+import lxml
+from bs4 import BeautifulSoup
 
-# Scraping Billboard 100
-date = input("Which year do you want to travel to? Type the date in this format YYYY-MM-DD: ")
-response = requests.get("https://www.billboard.com/charts/hot-100/" + date)
-soup = BeautifulSoup(response.text, 'html.parser')
-song_names_spans = soup.find_all("span", class_="chart-element__information__song")
-song_names = [song.getText() for song in song_names_spans]
+url = "https://www.amazon.com/Duo-Evo-Plus-esterilizadora-vaporizador/dp/B07W55DDFB/ref=sr_1_4?qid=1597660904"
+header = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36",
+    "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8"
+}
 
-#Spotify Authentication
-sp = spotipy.Spotify(
-    auth_manager=SpotifyOAuth(
-        scope="playlist-modify-private",
-        redirect_uri="http://example.com",
-        client_id=YOUR CLIENT ID,
-        client_secret=YOUR CLIENT SECRET,
-        show_dialog=True,
-        cache_path="token.txt"
-    )
-)
-user_id = sp.current_user()["id"]
-print(user_id)
+response = requests.get(url, headers=header)
 
-#Searching Spotify for songs by title
-song_uris = []
-year = date.split("-")[0]
-for song in song_names:
-    result = sp.search(q=f"track:{song} year:{year}", type="track")
-    print(result)
-    try:
-        uri = result["tracks"]["items"][0]["uri"]
-        song_uris.append(uri)
-    except IndexError:
-        print(f"{song} doesn't exist in Spotify. Skipped.")
+soup = BeautifulSoup(response.content, "lxml")
+print(soup.prettify())
 
-#Creating a new private playlist in Spotify
-playlist = sp.user_playlist_create(user=user_id, name=f"{date} Billboard 100", public=False)
-print(playlist)
-
-#Adding songs found into the new playlist
-sp.playlist_add_items(playlist_id=playlist["id"], items=song_uris)
+price = soup.find(id="priceblock_ourprice").get_text()
+price_without_currency = price.split("$")[1]
+price_as_float = float(price_without_currency)
+print(price_as_float)
