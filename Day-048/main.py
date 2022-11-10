@@ -1,19 +1,45 @@
-import requests
-import lxml
-from bs4 import BeautifulSoup
+from selenium import webdriver
 
-url = "https://www.amazon.com/Duo-Evo-Plus-esterilizadora-vaporizador/dp/B07W55DDFB/ref=sr_1_4?qid=1597660904"
-header = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36",
-    "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8"
-}
+chrome_driver_path = "C:\Development\chromedriver.exe"
+driver = webdriver.Chrome(executable_path=chrome_driver_path)
 
-response = requests.get(url, headers=header)
+# driver.get("https://www.amazon.com/dp/B096P1T9ST/ref=syn_sd_onsite_desktop_113?ie=UTF8&psc=1&pd_rd_plhdr=t")
+# # price = driver.find_element_by_class_name("a-price-whole")
+# # print(price.text)
 
-soup = BeautifulSoup(response.content, "lxml")
-print(soup.prettify())
+driver.get("https://www.python.org/")
+# search_bar = driver.find_element_by_name("q")
+# print(search_bar.get_attribute("placeholder"))
 
-price = soup.find(id="priceblock_ourprice").get_text()
-price_without_currency = price.split("$")[1]
-price_as_float = float(price_without_currency)
-print(price_as_float)
+# logo = driver.find_element_by_class_name("python-logo")
+# print(logo.size)
+
+# doc_link = driver.find_element_by_css_selector(".documentation-widget a")
+# print(doc_link.text)
+
+# submit_bug = driver.find_element_by_xpath('//*[@id="site-map"]/div[2]/div/ul/li[3]/a')
+# print(submit_bug.text)
+
+# python_book = driver.find_element_by_xpath('//*[@id="container"]/li[3]/ul/li[8]/a')
+# print(python_book.text)
+
+event_times = driver.find_elements_by_css_selector(".event-widget time")
+# for time in event_times:
+#     print(time.text)
+
+event_names = driver.find_elements_by_css_selector(".event-widget li a")
+# for name in event_names:
+#     print(name.text)
+
+events = {}
+
+for n in range(len(event_times)):
+    events[n] = {
+        "time": event_times[n].text,
+        "name": event_names[n].text,
+    }
+
+print(events)
+
+# driver.close()
+driver.quit()
