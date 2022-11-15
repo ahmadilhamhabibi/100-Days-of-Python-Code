@@ -1,0 +1,4 @@
+1. Understanding Color Teory
+2. Understanding Typography
+3. Manage ANTTENTION with effective UI
+4. UX Design
